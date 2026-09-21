@@ -1,0 +1,32 @@
+VERIFICATION RUN: 2026-09-21T13:46:22.469Z
+Passed: 10/10
+
+[PASS] Relational Seeding Volume (Orgs >= 5, Users >= 25, Txns >= 100, Audits >= 150)
+Actual Counts -> Orgs: 5, Users: 25, Txns: 100, Audits: 151
+
+[PASS] Foreign-Key Integrity: User -> Organization Constraint
+Orphaned Users Count: 0 (Expected 0)
+
+[PASS] Foreign-Key Integrity: Transaction -> User -> Organization Alignment
+Broken Transaction Relations: 0 / 20 inspected
+
+[PASS] RBAC Gate: Admin Session accessing Admin Route (Expect Allowed: true)
+Status: 200, Allowed: true
+
+[PASS] RBAC Gate: Member Session accessing Admin Route (Expect 403 Forbidden)
+Status: 403, Reason: Forbidden: Endpoint requires ADMIN privileges, but active session possesses MEMBER role.
+
+[PASS] RBAC Gate: Guest Session attempting Mutation/Member Route (Expect 403 Forbidden)
+Status: 403, Reason: Forbidden: Endpoint requires MEMBER privileges, but active session possesses GUEST role.
+
+[PASS] RBAC Gate: Anonymous/Null Session (Expect 401 Unauthorized)
+Status: 401, Reason: Authentication Required: Active session token or cookie was not found.
+
+[PASS] Resend & React Email Dispatch on Mutation (Logs to EmailDispatchLog + AuditLog)
+Mode: SIMULATED_MOCK_DISPATCH, Email ID: re_mock_1789998382427_gqst62f
+
+[PASS] Prisma Relational Persistence: EmailDispatchLog entry verified
+Found record ID: cmubatjdr0000trzk2n13mpf5, Recipient: admin@enterprise.demo
+
+[PASS] Resend Webhook Ingestion: Dual persistence in Prisma (Relational) & Mongoose (Object DB)
+Prisma Updated Status: DELIVERED | Mongoose Docs: 1

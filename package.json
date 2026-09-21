@@ -1,0 +1,47 @@
+{
+  "name": "fst-sl-2-relational-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "tsx scripts/db-pipeline.ts --reset",
+    "db:pipeline": "tsx scripts/db-pipeline.ts",
+    "test:endpoints": "tsx scripts/test-endpoints.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.5.0",
+    "@prisma/client": "^6.4.1",
+    "@react-email/components": "^0.0.33",
+    "@react-email/render": "^1.0.5",
+    "better-auth": "^1.1.21",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "lucide-react": "^0.475.0",
+    "mongoose": "^8.10.1",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "resend": "^4.1.2",
+    "tailwind-merge": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.2",
+    "prisma": "^6.4.1",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

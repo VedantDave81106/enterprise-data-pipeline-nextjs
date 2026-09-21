@@ -1,0 +1,158 @@
+// -------------------------------------------------------------
+// Unit IV: Database Integration - Prisma Relational Modeling (CO4)
+// Multi-Entity Normalized Schema backed by PostgreSQL
+// Target: Production / Submission Relational Engine
+// -------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Multi-tenant organization entity
+model Organization {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  tier         String        @default("PRO") // FREE, PRO, ENTERPRISE
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  users        User[]
+  transactions Transaction[]
+  auditLogs    AuditLog[]
+}
+
+// User entity with RBAC and Multi-tenancy
+model User {
+  id             String        @id @default(cuid())
+  name           String
+  email          String        @unique
+  emailVerified  Boolean       @default(false)
+  image          String?
+  role           Role          @default(MEMBER)
+  banned         Boolean       @default(false)
+  banReason      String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  transactions   Transaction[]
+  auditLogs      AuditLog[]
+  sessions       Session[]
+  accounts       Account[]
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+// Financial / operational transaction entity
+model Transaction {
+  id             String            @id @default(cuid())
+  referenceCode  String            @unique
+  amount         Float
+  currency       String            @default("USD")
+  status         TransactionStatus @default(PENDING)
+  category       String
+  description    String?
+
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+// Immutable audit log capturing security, auth, and business events
+model AuditLog {
+  id             String        @id @default(cuid())
+  action         String        // USER_LOGIN, TRANSACTION_CREATED, ROLE_ESCALATION, WEBHOOK_PROCESSED
+  resource       String        // User, Transaction, Session, ResendWebhook
+  details        String        // Structured JSON payload or descriptive context
+  ipAddress      String?
+  userAgent      String?
+
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime      @default(now())
+}
+
+// Transactional email dispatch tracking (Resend integration)
+model EmailDispatchLog {
+  id             String    @id @default(cuid())
+  resendEmailId  String?   @unique
+  recipientEmail String
+  subject        String
+  eventType      String    @default("DISPATCHED") // DISPATCHED, SENT, DELIVERED, BOUNCED, COMPLAINED
+  status         String    @default("SUCCESS")
+  metadata       String?   // JSON representation of delivery metadata
+  deliveredAt    DateTime?
+  bouncedAt      DateTime?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Better Auth: Session validation
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Better Auth: Account credentials
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+// Better Auth: Verification tokens
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
