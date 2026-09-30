@@ -20,10 +20,13 @@ import {
   Webhook,
   Sun,
   Moon,
+  BookOpen,
+  ArrowRight,
+  Workflow,
 } from "lucide-react";
 
 export default function DashboardPage() {
-  // Theme State: 'light' or 'dark' (defaults to 'light' for clean readability)
+  // Theme State: 'light' or 'dark'
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   // Load saved theme on mount
@@ -42,7 +45,7 @@ export default function DashboardPage() {
 
   // Simulator State
   const [selectedRole, setSelectedRole] = useState<"ADMIN" | "MEMBER" | "GUEST" | "ANONYMOUS">("ADMIN");
-  const [activeTab, setActiveTab] = useState<"overview" | "rbac" | "transactions" | "webhooks" | "explorer">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "report" | "rbac" | "transactions" | "webhooks" | "explorer">("overview");
   const [explorerSubTab, setExplorerSubTab] = useState<"txns" | "audits" | "users" | "orgs" | "emails" | "mongoose">("txns");
 
   // Probe & Action State
@@ -214,7 +217,7 @@ export default function DashboardPage() {
   // Color theme classes helper
   const isDark = theme === "dark";
   const bgMain = isDark ? "bg-slate-900 text-slate-100" : "bg-slate-50 text-slate-900";
-  const cardBg = isDark ? "bg-slate-850/80 bg-slate-800 border-slate-700/60" : "bg-white border-slate-200 shadow-sm";
+  const cardBg = isDark ? "bg-slate-800 border-slate-700/60" : "bg-white border-slate-200 shadow-sm";
   const cardAlt = isDark ? "bg-slate-900/60 border-slate-700/60" : "bg-slate-50 border-slate-200";
   const inputBg = isDark ? "bg-slate-900 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900";
   const subText = isDark ? "text-slate-400" : "text-slate-600";
@@ -229,7 +232,7 @@ export default function DashboardPage() {
         <header className={`mb-8 border-b ${navBorder} pb-6`}>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              {/* Tech Badges (Clean, no course codes) */}
+              {/* Tech Badges */}
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
                   Next.js 15
@@ -298,6 +301,7 @@ export default function DashboardPage() {
           <nav className={`mt-6 flex space-x-1 border-b ${navBorder} overflow-x-auto`}>
             {[
               { id: "overview", label: "Overview", icon: Layers },
+              { id: "report", label: "Technical Architecture Report", icon: BookOpen },
               { id: "rbac", label: "Role Access (RBAC)", icon: ShieldCheck },
               { id: "transactions", label: "Transactions & Emails", icon: Mail },
               { id: "webhooks", label: "Webhooks & Database", icon: Webhook },
@@ -423,7 +427,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Architecture Overview Cards (Simple & Student-friendly) */}
+            {/* Architecture Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className={`p-6 rounded-xl border ${cardBg} flex flex-col justify-between`}>
                 <div>
@@ -481,7 +485,466 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* TAB 2: RBAC PROXY GATES */}
+        {/* TAB 2: TECHNICAL ARCHITECTURE REPORT */}
+        {activeTab === "report" && (
+          <div className="space-y-8">
+            {/* College Header Banner */}
+            <div className={`p-6 rounded-2xl border text-center ${cardBg}`}>
+              <span className={`text-xs uppercase tracking-widest font-semibold block ${subText}`}>
+                Shri Vile Parle Kelavani Mandal's
+              </span>
+              <h2 className={`text-xl sm:text-2xl font-extrabold tracking-tight mt-1 ${headerText}`}>
+                DWARKADAS J. SANGHVI COLLEGE OF ENGINEERING
+              </h2>
+              <p className={`text-xs mt-1 ${subText}`}>
+                (Autonomous College Affiliated to the University of Mumbai) • NAAC Accredited with "A" Grade (CGPA: 3.18)
+              </p>
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/60 flex flex-wrap items-center justify-center gap-4 text-xs">
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  Department of Artificial Intelligence and Machine Learning
+                </span>
+                <span className={subText}>•</span>
+                <span className={`font-medium ${headerText}`}>B.Tech. Sem: V</span>
+                <span className={subText}>•</span>
+                <span className="font-mono bg-blue-500/10 text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded">
+                  Subject: Fullstack Development with NextJs (DJS23AMD302)
+                </span>
+              </div>
+            </div>
+
+            {/* Deliverables Verification Checklist */}
+            <div className={`p-6 rounded-xl border ${cardBg}`}>
+              <h3 className={`text-base font-bold flex items-center gap-2 ${headerText}`}>
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                Project Deliverables Status
+              </h3>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`p-4 rounded-lg border ${cardAlt}`}>
+                  <div className="flex items-center gap-2 text-emerald-500 font-semibold text-xs mb-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Deliverable 1</span>
+                  </div>
+                  <h4 className={`text-sm font-bold ${headerText}`}>Source Code Repository</h4>
+                  <p className={`text-xs mt-1 ${subText}`}>
+                    <code>prisma/schema.prisma</code>, <code>prisma/seed.ts</code>, protected API route handlers, and React Email components.
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-lg border ${cardAlt}`}>
+                  <div className="flex items-center gap-2 text-emerald-500 font-semibold text-xs mb-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Deliverable 2</span>
+                  </div>
+                  <h4 className={`text-sm font-bold ${headerText}`}>Terminal Logs & Persistence</h4>
+                  <p className={`text-xs mt-1 ${subText}`}>
+                    Verified text logs demonstrating database schema sync, Faker.js seed execution, and 10-point test verification.
+                  </p>
+                </div>
+
+                <div className={`p-4 rounded-lg border ${cardAlt}`}>
+                  <div className="flex items-center gap-2 text-emerald-500 font-semibold text-xs mb-1">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Deliverable 3</span>
+                  </div>
+                  <h4 className={`text-sm font-bold ${headerText}`}>System Architecture Note</h4>
+                  <p className={`text-xs mt-1 ${subText}`}>
+                    Full technical documentation covering relational data relationships, authorization flowcharts, and email dispatch sequence diagrams.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 1: THEORY - RELATIONAL DATA MODELING & MOCK PIPELINE */}
+            <div className={`p-6 rounded-xl border ${cardBg} space-y-4`}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                  <Database className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold ${headerText}`}>
+                    Part 1: Relational Schema Modeling & Automated Mock Data Pipeline
+                  </h3>
+                  <span className={`text-xs ${subText}`}>
+                    Theory, 3NF Normalization, Foreign Key Constraints & Faker.js Integration
+                  </span>
+                </div>
+              </div>
+
+              <div className={`text-xs leading-relaxed space-y-3 ${subText}`}>
+                <p>
+                  <strong>Relational Schema Design & 3NF Normalization:</strong> The application relational schema is structured in Third Normal Form (3NF) using <strong>Prisma ORM</strong>. Every non-primary attribute is functionally dependent solely on the primary key, eliminating transitive dependencies. The schema models a multi-tenant business boundary across core entities:
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>Organization:</strong> The root tenancy entity. Defines company workspaces, subscription tiers (<code>FREE</code>, <code>PRO</code>, <code>ENTERPRISE</code>), and serves as the strict boundary for data isolation.</li>
+                  <li><strong>User:</strong> Belongs to an Organization via foreign key <code>organizationId</code>. Enforces Role-Based Access Control via enum <code>Role</code> (<code>ADMIN</code>, <code>MEMBER</code>, <code>GUEST</code>).</li>
+                  <li><strong>Transaction:</strong> Represents operational and financial events. Contains double foreign-key constraints linking both to the creating <code>userId</code> and the parent <code>organizationId</code> with referential integrity (<code>onDelete: Cascade</code>).</li>
+                  <li><strong>AuditLog:</strong> An immutable chronological security and operational trace. Records user actions, IP addresses, edge regions, and payload metadata with <code>onDelete: SetNull</code> to preserve audit history even if user records are purged.</li>
+                  <li><strong>EmailDispatchLog:</strong> Tracks Resend transactional email dispatches, delivery timestamps, bounce events, and status transitions.</li>
+                </ul>
+
+                <p>
+                  <strong>Programmatic Seeding with Faker.js:</strong> Rather than manual mock data entry, the executable script <code>prisma/seed.ts</code> leverages <code>@faker-js/faker</code> to generate localized, relational records. It ensures strict foreign-key integrity by creating Organizations first, then Users belonging to those organizations, then Transactions strictly paired to both the user and their assigned organization, followed by realistic Audit Logs and Email Logs.
+                </p>
+
+                <p>
+                  <strong>Single-Command Automated CLI Pipeline:</strong> The workflow script <code>scripts/db-pipeline.ts</code> combines Prisma Client generation (<code>npx prisma generate</code>), schema synchronization (<code>npx prisma db push</code>), and seed execution (<code>npx tsx prisma/seed.ts</code>) into a single command: <code>npm run db:pipeline</code>.
+                </p>
+              </div>
+
+              {/* DIAGRAM 1: Visual Interactive Entity-Relationship Diagram (ERD) */}
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/60">
+                <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${headerText}`}>
+                  <Workflow className="w-4 h-4 text-blue-500" />
+                  Visual Architecture Diagram 1: Entity-Relationship Model (ERD)
+                </h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs">
+                  {/* Entity: Organization */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-blue-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      Organization [1:N Root]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 id: String (PK)</div>
+                      <div>name: String</div>
+                      <div>slug: String (Unique)</div>
+                      <div>tier: FREE | PRO | ENTERPRISE</div>
+                      <div className={subText}>createdAt, updatedAt</div>
+                    </div>
+                  </div>
+
+                  {/* Entity: User */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-purple-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      User [Child of Org]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 id: String (PK)</div>
+                      <div>name, email (Unique)</div>
+                      <div className="text-blue-500 font-bold">role: ADMIN | MEMBER | GUEST</div>
+                      <div className="text-emerald-600 dark:text-emerald-400">🔗 organizationId: FK ➔ Org</div>
+                      <div className={subText}>sessions[], accounts[]</div>
+                    </div>
+                  </div>
+
+                  {/* Entity: Transaction */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-emerald-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      Transaction [Child of Org & User]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 id: String (PK)</div>
+                      <div>referenceCode: String (Unique)</div>
+                      <div>amount: Float ($ USD)</div>
+                      <div>status: COMPLETED | PENDING | FAILED</div>
+                      <div className="text-emerald-600 dark:text-emerald-400">🔗 userId: FK ➔ User</div>
+                      <div className="text-emerald-600 dark:text-emerald-400">🔗 organizationId: FK ➔ Org</div>
+                    </div>
+                  </div>
+
+                  {/* Entity: AuditLog */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-amber-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      AuditLog [Security Trail]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 id: String (PK)</div>
+                      <div>action: USER_LOGIN | TXN_CREATED</div>
+                      <div>resource: Transaction | User</div>
+                      <div>details: JSON String</div>
+                      <div className="text-emerald-600 dark:text-emerald-400">🔗 userId, organizationId: FK</div>
+                    </div>
+                  </div>
+
+                  {/* Entity: EmailDispatchLog */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-pink-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      EmailDispatchLog [Resend Log]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 id: String (PK)</div>
+                      <div>resendEmailId: String (Unique)</div>
+                      <div>recipientEmail: String</div>
+                      <div>eventType: DISPATCHED | DELIVERED | BOUNCED</div>
+                      <div>status: SUCCESS | FAILED</div>
+                      <div className={subText}>deliveredAt, bouncedAt</div>
+                    </div>
+                  </div>
+
+                  {/* Entity: RawWebhookEvent (Mongoose) */}
+                  <div className={`p-3 rounded-lg border ${cardAlt}`}>
+                    <div className="bg-teal-600 text-white font-bold px-2 py-1 rounded text-[11px] mb-2">
+                      RawWebhookEvent [Mongoose ODM]
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      <div className="text-yellow-600 dark:text-yellow-400">🔑 _id: ObjectId</div>
+                      <div>eventId: String (Indexed)</div>
+                      <div>provider: "Resend"</div>
+                      <div>type: "email.delivered" | "email.bounced"</div>
+                      <div className="text-purple-500 font-bold">rawPayload: Mixed (JSON Document)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 2: THEORY - AUTHENTICATION, SESSION CONTROL & EDGE PROXY GATES */}
+            <div className={`p-6 rounded-xl border ${cardBg} space-y-4`}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold ${headerText}`}>
+                    Part 2: Authenticated Session Enforcement & Middleware Proxy Gates
+                  </h3>
+                  <span className={`text-xs ${subText}`}>
+                    Next.js Edge Middleware Architecture, Session Validation, RBAC Hierarchy & Tenant Scoping
+                  </span>
+                </div>
+              </div>
+
+              <div className={`text-xs leading-relaxed space-y-3 ${subText}`}>
+                <p>
+                  <strong>Edge Middleware vs. Route Handler Execution:</strong> In Next.js App Router, <code>middleware.ts</code> executes prior to any backend route segment. This architectural gate validates incoming session credentials and role permissions at the network boundary, preventing unauthorized requests from consuming database compute resources.
+                </p>
+                <p>
+                  <strong>Session Extraction & RBAC Hierarchy:</strong> The proxy gate (<code>lib/proxy-gate.ts</code>) extracts session credentials from HTTP cookies (<code>better-auth.session_token</code>) or Bearer authorization headers. The parsed identity is evaluated against a role permission hierarchy:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-[11px]">
+                  <div className={`p-2.5 rounded border ${cardAlt}`}>
+                    <span className="text-red-500 font-bold block">ADMIN (Level 3)</span>
+                    <span>Full access to administrative aggregations, all tenants, and configuration routes.</span>
+                  </div>
+                  <div className={`p-2.5 rounded border ${cardAlt}`}>
+                    <span className="text-blue-500 font-bold block">MEMBER (Level 2)</span>
+                    <span>Authorized to read and create transactions strictly within their assigned organization.</span>
+                  </div>
+                  <div className={`p-2.5 rounded border ${cardAlt}`}>
+                    <span className="text-amber-500 font-bold block">GUEST (Level 1)</span>
+                    <span>Read-only observer access. Blocked with 403 Forbidden on database mutations.</span>
+                  </div>
+                </div>
+                <p>
+                  <strong>Downstream Header Injection:</strong> Upon validating the session, the middleware decorates the request with trusted identity headers (<code>x-user-id</code>, <code>x-user-role</code>, <code>x-organization-id</code>). Backend Route Handlers receive verified context directly from the gateway, guaranteeing multi-tenant isolation.
+                </p>
+              </div>
+
+              {/* DIAGRAM 2: Visual Middleware Proxy Gate Flowchart */}
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/60">
+                <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${headerText}`}>
+                  <Workflow className="w-4 h-4 text-emerald-500" />
+                  Visual Architecture Diagram 2: Next.js Edge Middleware Request Flow
+                </h4>
+
+                <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-mono">
+                  <div className={`p-3 rounded-lg border text-center w-full md:w-1/4 ${cardAlt}`}>
+                    <span className="text-slate-400 block text-[10px]">Step 1</span>
+                    <strong className={headerText}>Incoming Request</strong>
+                    <span className={`block text-[10px] mt-1 ${subText}`}>Headers, Cookies, Body</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-400 hidden md:block" />
+                  <div className={`p-3 rounded-lg border text-center w-full md:w-1/4 ${cardAlt}`}>
+                    <span className="text-slate-400 block text-[10px]">Step 2</span>
+                    <strong className="text-blue-500">middleware.ts Gate</strong>
+                    <span className={`block text-[10px] mt-1 ${subText}`}>Extract session & verify role</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-400 hidden md:block" />
+                  <div className={`p-3 rounded-lg border text-center w-full md:w-1/4 ${cardAlt}`}>
+                    <span className="text-slate-400 block text-[10px]">Step 3</span>
+                    <strong className="text-purple-500">Header Injection</strong>
+                    <span className={`block text-[10px] mt-1 ${subText}`}>x-user-id, x-org-id</span>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-400 hidden md:block" />
+                  <div className={`p-3 rounded-lg border text-center w-full md:w-1/4 ${cardAlt}`}>
+                    <span className="text-slate-400 block text-[10px]">Step 4</span>
+                    <strong className="text-emerald-500">Route Handler Execution</strong>
+                    <span className={`block text-[10px] mt-1 ${subText}`}>Prisma query scoped to tenant</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: THEORY - TRANSACTIONAL EMAILS & HYBRID PERSISTENCE */}
+            <div className={`p-6 rounded-xl border ${cardBg} space-y-4`}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-pink-500/10 text-pink-500">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold ${headerText}`}>
+                    Part 3: Transactional Lifecycle Dispatch & Hybrid Dual-Store Persistence
+                  </h3>
+                  <span className={`text-xs ${subText}`}>
+                    React Email Rendering, Resend Notification Triggers, Webhook Ingestion & Mongoose Document Storage
+                  </span>
+                </div>
+              </div>
+
+              <div className={`text-xs leading-relaxed space-y-3 ${subText}`}>
+                <p>
+                  <strong>Transactional Email Rendering Lifecycle:</strong> Modern applications require modular, maintainable email notifications. Using <code>@react-email/components</code>, the alert template (<code>emails/TransactionAlertEmail.tsx</code>) is authored as standard React components (<code>Container</code>, <code>Heading</code>, <code>Text</code>, <code>Hr</code>). At runtime, <code>@react-email/render</code> compiles this component into clean, cross-client compatible HTML.
+                </p>
+                <p>
+                  <strong>Database Mutation Trigger:</strong> When an authorized client executes <code>POST /api/transactions</code>:
+                </p>
+                <ol className="list-decimal pl-5 space-y-1">
+                  <li>Prisma executes the transaction mutation in the relational database.</li>
+                  <li>An immutable <code>AuditLog</code> entry is written recording the financial event.</li>
+                  <li>The service layer invokes <code>sendTransactionAlertNotification()</code> to dispatch the email via the Resend API (<code>resend.emails.send</code>).</li>
+                  <li>A corresponding record is created in <code>EmailDispatchLog</code> with status <code>DISPATCHED</code>.</li>
+                </ol>
+                <p>
+                  <strong>Resend Webhook Ingestion & Hybrid Datastore Architecture:</strong> External email lifecycle events (such as <code>email.delivered</code> and <code>email.bounced</code>) are asynchronously posted by Resend to <code>/api/webhooks/resend</code>. The application uses a hybrid dual-persistence pattern:
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>Prisma ORM (Relational Store):</strong> Updates the structured <code>EmailDispatchLog</code> table with the new delivery status and timestamps, maintaining ACID guarantees.</li>
+                  <li><strong>Mongoose ODM (Object Database):</strong> Simultaneously saves the entire, unconstrained JSON event payload into MongoDB via the <code>RawWebhookEvent</code> document model. This demonstrates how relational platforms handle business transactions while document databases capture high-volume, flexible telemetry.</li>
+                </ul>
+              </div>
+
+              {/* DIAGRAM 3: Sequence Flow Diagram */}
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/60">
+                <h4 className={`text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 ${headerText}`}>
+                  <Workflow className="w-4 h-4 text-pink-500" />
+                  Visual Architecture Diagram 3: Transaction Mutation & Webhook Lifecycle Sequence
+                </h4>
+
+                <div className={`p-4 rounded-lg border font-mono text-xs space-y-2 ${cardAlt}`}>
+                  <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-700 text-slate-500 text-[10px]">
+                    <span>PHASE</span>
+                    <span>EVENT SEQUENCE & DATA STORE</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold shrink-0">[1. Request]</span>
+                    <span>Client submits transaction ➔ Next.js Middleware verifies active session and role.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold shrink-0">[2. Prisma Mutation]</span>
+                    <span><code>prisma.transaction.create()</code> inserts record with foreign keys ➔ <code>prisma.auditLog.create()</code> logs action.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-purple-500 font-bold shrink-0">[3. Resend Dispatch]</span>
+                    <span>React Email renders HTML ➔ Resend API dispatches notification ➔ <code>EmailDispatchLog</code> saved.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-pink-500 font-bold shrink-0">[4. Webhook Trigger]</span>
+                    <span>Resend dispatches delivery/bounce event to <code>/api/webhooks/resend</code>.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-600 dark:text-yellow-400 font-bold shrink-0">[5. Dual Persistence]</span>
+                    <span>Prisma updates <code>EmailDispatchLog.status = "DELIVERED"</code> ➔ Mongoose saves raw JSON in <code>RawWebhookEvent</code>.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4: REAL TERMINAL EXECUTION LOGS (Text Logs, No Screenshot Placeholders) */}
+            <div className={`p-6 rounded-xl border ${cardBg} space-y-4`}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-slate-500/10 text-slate-500">
+                  <Terminal className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-bold ${headerText}`}>
+                    Verified Terminal Logs & Execution Traces
+                  </h3>
+                  <span className={`text-xs ${subText}`}>
+                    Raw Terminal Outputs Demonstrating Database Reset, Seeding & Automated Endpoint Verification
+                  </span>
+                </div>
+              </div>
+
+              {/* Log 1: Migration & Seeding Pipeline */}
+              <div>
+                <span className={`text-xs font-semibold block mb-1 font-mono ${subText}`}>
+                  Terminal Log 1: Automated Pipeline ($ npm run db:pipeline)
+                </span>
+                <pre className="p-4 rounded-lg bg-slate-950 text-slate-300 font-mono text-[11px] overflow-x-auto border border-slate-800 leading-relaxed">
+{`================================================================================
+🚀 AUTOMATED RELATIONAL DATA INGESTION & PIPELINE
+   Mode: Standard Sync & Seed
+================================================================================
+
+▶ [Pipeline Step] Generating Prisma Client Artifacts...
+$ npx prisma generate
+✔ Generated Prisma Client to .\\node_modules\\@prisma\\client in 143ms
+
+▶ [Pipeline Step] Synchronizing Relational Database Schema...
+$ npx prisma db push --skip-generate
+Datasource "db": SQLite database "dev.db" at "file:./dev.db"
+The database is already in sync with the Prisma schema.
+
+▶ [Pipeline Step] Executing Automated Seeding Pipeline via Faker.js...
+$ npx tsx prisma/seed.ts
+🌱 [Seed Pipeline] Commencing relational database mock data ingestion...
+🧹 [Seed Pipeline] Cleaning existing records for idempotency...
+🏢 [Seed Pipeline] Creating multi-tenant Organizations...
+✅ Created 5 organizations.
+👥 [Seed Pipeline] Populating localized Users across Roles (ADMIN, MEMBER, GUEST)...
+✅ Seeded 25 Users with relational foreign keys.
+💳 [Seed Pipeline] Generating normalized Transactions with foreign-key integrity...
+✅ Seeded 100 Transactions.
+🛡️ [Seed Pipeline] Creating relational Audit Logs...
+✅ Seeded 150 relational Audit Logs.
+📧 [Seed Pipeline] Generating Email Dispatch Logs for transactional events...
+✅ Seeded 25 Email Dispatch Logs.
+
+🎉 [Seed Pipeline Completed] Ingestion completed in 2.56s!
+--------------------------------------------------
+• Organizations: 5
+• Users:         25
+• Transactions:  100
+• Audit Logs:    150
+• Email Logs:    25
+--------------------------------------------------
+
+================================================================================
+🎉 Pipeline executed successfully in 10.98s!
+   Log recorded: logs/pipeline-execution.log
+================================================================================`}
+                </pre>
+              </div>
+
+              {/* Log 2: Automated 10-Point Test Verification */}
+              <div>
+                <span className={`text-xs font-semibold block mb-1 font-mono ${subText}`}>
+                  Terminal Log 2: Verification Suite ($ npm run test:endpoints)
+                </span>
+                <pre className="p-4 rounded-lg bg-slate-950 text-slate-300 font-mono text-[11px] overflow-x-auto border border-slate-800 leading-relaxed">
+{`================================================================================
+🧪 AUTOMATED VERIFICATION SUITE: RELATIONAL DATA, RBAC & WEBHOOKS
+================================================================================
+✅ PASS [1] Relational Seeding Volume (Orgs >= 5, Users >= 25, Txns >= 100, Audits >= 150)
+       └─ Actual Counts -> Orgs: 5, Users: 25, Txns: 100, Audits: 152
+✅ PASS [2] Foreign-Key Integrity: User -> Organization Constraint
+       └─ Orphaned Users Count: 0 (Expected 0)
+✅ PASS [3] Foreign-Key Integrity: Transaction -> User -> Organization Alignment
+       └─ Broken Transaction Relations: 0 / 20 inspected
+✅ PASS [4] RBAC Gate: Admin Session accessing Admin Route (Expect Allowed: true)
+       └─ Status: 200, Allowed: true
+✅ PASS [5] RBAC Gate: Member Session accessing Admin Route (Expect 403 Forbidden)
+       └─ Status: 403, Reason: Forbidden: Endpoint requires ADMIN privileges, but active session possesses MEMBER role.
+✅ PASS [6] RBAC Gate: Guest Session attempting Mutation/Member Route (Expect 403 Forbidden)
+       └─ Status: 403, Reason: Forbidden: Endpoint requires MEMBER privileges, but active session possesses GUEST role.
+✅ PASS [7] RBAC Gate: Anonymous/Null Session (Expect 401 Unauthorized)
+       └─ Status: 401, Reason: Authentication Required: Active session token or cookie was not found.
+✅ PASS [8] Resend & React Email Dispatch on Mutation (Logs to EmailDispatchLog + AuditLog)
+       └─ Mode: SIMULATED_MOCK_DISPATCH, Email ID: re_mock_1790790329281_dbu96y4
+✅ PASS [9] Prisma Relational Persistence: EmailDispatchLog entry verified
+       └─ Found record ID: cmuoebphl0000trf4yz9uolun, Recipient: admin@enterprise.demo
+✅ PASS [10] Resend Webhook Ingestion: Dual persistence in Prisma (Relational) & Mongoose (Object DB)
+       └─ Prisma Updated Status: DELIVERED | Mongoose Docs: 1
+================================================================================
+Total: 10 | Passed: 10 | Failed: 0
+================================================================================`}
+                </pre>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: RBAC PROXY GATES */}
         {activeTab === "rbac" && (
           <div className="space-y-6">
             <div className={`p-6 rounded-xl border ${cardBg}`}>
@@ -585,7 +1048,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* TAB 3: TRANSACTIONS & RESEND EMAILS */}
+        {/* TAB 4: TRANSACTIONS & RESEND EMAILS */}
         {activeTab === "transactions" && (
           <div className="space-y-6">
             <div className={`p-6 rounded-xl border ${cardBg}`}>
@@ -689,7 +1152,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* TAB 4: WEBHOOKS & MONGOOSE */}
+        {/* TAB 5: WEBHOOKS & MONGOOSE */}
         {activeTab === "webhooks" && (
           <div className="space-y-6">
             <div className={`p-6 rounded-xl border ${cardBg}`}>
@@ -754,7 +1217,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* TAB 5: DATABASE EXPLORER */}
+        {/* TAB 6: DATABASE EXPLORER */}
         {activeTab === "explorer" && (
           <div className="space-y-6">
             <div className={`p-6 rounded-xl border ${cardBg}`}>
