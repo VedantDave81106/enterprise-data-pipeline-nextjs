@@ -1,8 +1,8 @@
-VERIFICATION RUN: 2026-09-21T13:46:22.469Z
+VERIFICATION RUN: 2026-09-30T17:45:29.319Z
 Passed: 10/10
 
 [PASS] Relational Seeding Volume (Orgs >= 5, Users >= 25, Txns >= 100, Audits >= 150)
-Actual Counts -> Orgs: 5, Users: 25, Txns: 100, Audits: 151
+Actual Counts -> Orgs: 5, Users: 25, Txns: 100, Audits: 152
 
 [PASS] Foreign-Key Integrity: User -> Organization Constraint
 Orphaned Users Count: 0 (Expected 0)
@@ -23,10 +23,10 @@ Status: 403, Reason: Forbidden: Endpoint requires MEMBER privileges, but active 
 Status: 401, Reason: Authentication Required: Active session token or cookie was not found.
 
 [PASS] Resend & React Email Dispatch on Mutation (Logs to EmailDispatchLog + AuditLog)
-Mode: SIMULATED_MOCK_DISPATCH, Email ID: re_mock_1789998382427_gqst62f
+Mode: SIMULATED_MOCK_DISPATCH, Email ID: re_mock_1790790329281_dbu96y4
 
 [PASS] Prisma Relational Persistence: EmailDispatchLog entry verified
-Found record ID: cmubatjdr0000trzk2n13mpf5, Recipient: admin@enterprise.demo
+Found record ID: cmuoebphl0000trf4yz9uolun, Recipient: admin@enterprise.demo
 
 [PASS] Resend Webhook Ingestion: Dual persistence in Prisma (Relational) & Mongoose (Object DB)
 Prisma Updated Status: DELIVERED | Mongoose Docs: 1
