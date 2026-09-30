@@ -1,31 +1,78 @@
-# Automated Relational Data Seeding, Transactional Event Notification & Secure Full-Stack Endpoints
+# Relational Data Seeding, Transactional Notifications & Secure Endpoints
 
-> **Course Outcomes Mapped:**
-> - **CO3:** Execute secure authorization and multi-tenant session validation via Better Auth and Next.js Proxy/Middleware layers.
-> - **CO4:** Deploy data-driven endpoints connecting relational platforms via Prisma ORM and object databases via Mongoose.
->
-> **Associated Units:**
-> - Unit IV (Database Integration: Prisma ORM & Mongoose)
-> - Unit V (Modern Authentication, Session Control & Security)
-> - Unit VI (Optimization, Edge Layers & Cloud Deployment)
->
-> **Self-Learning Modules Covered:**
-> - Topic 4: Database Seeding & Automated Mock Data with Faker.js
-> - Topic 5: Transactional Email Integration with Resend & React Email
->
-> **Mapped POs/PSOs:** PO3, PO5, PO11 | PSO 2
+A full-stack Next.js application that integrates automated relational database seeding with Faker.js, role-based session authorization via Next.js Edge Middleware, transactional email notifications using Resend and React Email, and webhook ingestion across relational (Prisma ORM) and document (Mongoose ODM) datastores.
 
 ---
 
-## 🌟 Executive Summary
+## 🛠️ Technology Stack
 
-This enterprise-grade application implements an automated backend service and data ingestion pipeline combining:
-1. **Prisma ORM Normalized Relational Schema**: 3NF schema encompassing `Organizations`, `Users`, `Roles`, `Transactions`, `AuditLogs`, and `EmailDispatchLogs` with strict foreign-key integrity.
-2. **Automated Mock Data Seeding**: High-fidelity localized dummy records generated using `@faker-js/faker` via an idempotent seeding script (`prisma/seed.ts`).
-3. **Next.js Edge Middleware & Proxy Gates**: Role-Based Access Control (`ADMIN`, `MEMBER`, `GUEST`) and multi-tenant session parsing enforcing route isolation before requests reach backend handlers.
-4. **Resend & React Email Transactional Engine**: Clean, responsive email component (`TransactionAlertEmail.tsx`) dispatched upon database mutations with delivery/bounce webhook ingestion.
-5. **Hybrid Object Datastore via Mongoose**: Ingestion of raw unconstrained JSON webhook telemetry into MongoDB (`RawWebhookEvent`) satisfying CO4 dual-datastore outcomes.
-6. **Interactive Evaluation Portal**: Web UI for testing RBAC proxy gates, triggering database mutations and Resend notifications, simulating webhooks, and browsing datastores live.
+| Layer | Technologies |
+| :--- | :--- |
+| **Framework** | Next.js 15 (App Router), React 19, TypeScript |
+| **Styling** | Tailwind CSS, Lucide Icons |
+| **Relational Database** | Prisma ORM with SQLite (local zero-config) / PostgreSQL (production) |
+| **Authentication & RBAC** | Better Auth, Next.js Edge Middleware / Proxy Layer |
+| **Mock Data Engine** | `@faker-js/faker` |
+| **Transactional Email** | Resend API, `@react-email/components`, `@react-email/render` |
+| **Object Database** | Mongoose ODM (MongoDB document telemetry store) |
+
+---
+
+## 🏗️ System Architecture & Workflow
+
+```text
+[ Client Request ]
+       │
+       ▼
+[ Next.js Edge Middleware (middleware.ts) ]
+       │── Parses session token / cookies
+       │── Checks RBAC permission: ADMIN > MEMBER > GUEST
+       │── Injects verified tenant headers (x-user-id, x-user-role, x-org-id)
+       ▼
+[ Protected Route Handlers ]
+       ├── GET /api/admin/metrics       (Admin only)
+       ├── GET, POST /api/transactions  (Tenant scoped)
+       └── POST /api/webhooks/resend    (Webhook ingestion)
+       │
+       ├──► [ Prisma ORM ] ────────────► Relational Tables (Users, Orgs, Txns, Audits)
+       ├──► [ React Email + Resend ] ──► Transactional Email Alert Dispatch
+       └──► [ Mongoose ODM ] ──────────► Raw Webhook Telemetry Document Store
+```
+
+---
+
+## 🗄️ Database Schema & Entities
+
+The relational schema is defined with Third Normal Form (3NF) constraints in `prisma/schema.prisma`:
+
+* **`Organization`**: Multi-tenant workspace entity with subscription tiers (`FREE`, `PRO`, `ENTERPRISE`).
+* **`User`**: Account entity containing role assignment (`ADMIN`, `MEMBER`, `GUEST`) and organization link.
+* **`Transaction`**: Financial records with status (`PENDING`, `COMPLETED`, `FAILED`, `REFUNDED`), monetary amounts, and verified foreign keys to parent User and Organization.
+* **`AuditLog`**: Security audit log capturing authentication events, role checks, and database mutations.
+* **`EmailDispatchLog`**: Relational tracking of transactional email dispatches, status transitions, and delivery timestamps.
+* **`Session` / `Account` / `Verification`**: Better Auth tables for session validation.
+* **`RawWebhookEvent` (Mongoose Document)**: Flexible document model in MongoDB storing raw unnormalized JSON payloads received from external webhooks.
+
+---
+
+## 🔐 Edge Middleware & Role-Based Access Control
+
+The Next.js Edge Middleware layer (`middleware.ts` & `lib/proxy-gate.ts`) intercepts requests before route handlers execute:
+
+* **`/admin/*` & `/api/admin/*`**: Enforces strict `ADMIN` role. Requests from members, guests, or unauthenticated users receive `HTTP 403 Forbidden` or `HTTP 401 Unauthorized`.
+* **`/member/*` & `/api/member/*`**: Restricted to users with `ADMIN` or `MEMBER` roles.
+* **`/api/transactions`**: Enforces multi-tenant data boundaries. Queries are scoped strictly to the authenticated user's `organizationId`.
+* **Header Forwarding**: On authorized requests, the proxy gate injects `x-user-id`, `x-user-email`, `x-user-role`, and `x-organization-id` into downstream request headers.
+
+---
+
+## 📧 Transactional Email & Webhook Ingestion
+
+1. **Mutation Trigger**: When a transaction is created via `POST /api/transactions`, the backend automatically renders a responsive HTML email using `TransactionAlertEmail.tsx`.
+2. **Dispatch**: The email is dispatched through the Resend API (`resend.emails.send`), and a record is saved to `EmailDispatchLog` with an accompanying `AuditLog` entry.
+3. **Webhook Ingestion**: When Resend dispatches delivery or bounce events to `POST /api/webhooks/resend`:
+   * **Relational Store (Prisma)**: Updates the delivery status (`DELIVERED` / `BOUNCED`) and timestamp in `EmailDispatchLog`.
+   * **Document Store (Mongoose)**: Saves the complete, unconstrained JSON event payload into MongoDB via `RawWebhookEvent`.
 
 ---
 
@@ -35,21 +82,21 @@ This enterprise-grade application implements an automated backend service and da
 ├── app/
 │   ├── api/
 │   │   ├── admin/
-│   │   │   └── metrics/route.ts      # Protected Admin-only route handler (CO3)
+│   │   │   └── metrics/route.ts      # Admin aggregate statistics endpoint
 │   │   ├── auth/
 │   │   │   └── [...all]/route.ts     # Better Auth catch-all API handler
 │   │   ├── dashboard/
 │   │   │   └── overview/route.ts     # Telemetry summary endpoint
-│   │   ├── transactions/route.ts     # Multi-tenant scoped CRUD + Resend trigger (CO3/CO4)
+│   │   ├── transactions/route.ts     # Multi-tenant transaction CRUD + Resend trigger
 │   │   └── webhooks/
 │   │       └── resend/route.ts       # Resend webhook ingestion (Prisma + Mongoose)
-│   ├── globals.css                   # Tailwind CSS styling directives
+│   ├── globals.css                   # Tailwind CSS styling and theme variables
 │   ├── layout.tsx                    # Next.js root layout with metadata
-│   └── page.tsx                      # Interactive verification portal & RBAC simulator
+│   └── page.tsx                      # Web evaluation portal with Light & Dark themes
 ├── docs/
-│   └── ARCHITECTURE_NOTE.md          # 2-Page formal system architecture note & diagrams
+│   └── ARCHITECTURE_NOTE.md          # System architecture documentation & diagrams
 ├── emails/
-│   └── TransactionAlertEmail.tsx     # Modular React Email template (@react-email/components)
+│   └── TransactionAlertEmail.tsx     # Modular React Email template
 ├── lib/
 │   ├── auth.ts                       # Better Auth server configuration with Prisma adapter
 │   ├── auth-client.ts                # Better Auth React client configuration
@@ -61,13 +108,13 @@ This enterprise-grade application implements an automated backend service and da
 │   ├── pipeline-execution.log        # Timestamped CLI database reset & seed log
 │   └── test-verification.log         # Automated 10-point test verification trace
 ├── models/
-│   └── RawWebhookEvent.ts            # Mongoose ODM Document schema for raw telemetry (CO4)
+│   └── RawWebhookEvent.ts            # Mongoose ODM Document schema for raw telemetry
 ├── prisma/
-│   ├── schema.prisma                 # Active multi-entity normalized schema
-│   ├── schema.postgresql.prisma      # Production PostgreSQL schema definition
+│   ├── schema.prisma                 # Multi-entity normalized schema (SQLite / PostgreSQL)
+│   ├── schema.postgresql.prisma      # PostgreSQL schema definition
 │   └── seed.ts                       # Localized Faker.js database seeding pipeline
 ├── scripts/
-│   ├── db-pipeline.ts                # Single-command reset, migration & seeding pipeline
+│   ├── db-pipeline.ts                # Migration and automated seeding pipeline script
 │   ├── test-endpoints.ts             # 10-point automated end-to-end verification suite
 │   └── toggle-db.ts                  # Provider switcher (PostgreSQL <-> SQLite)
 ├── middleware.ts                     # Next.js Edge Middleware layer for RBAC proxy gates
@@ -79,72 +126,14 @@ This enterprise-grade application implements an automated backend service and da
 
 ---
 
-## 🚀 Quick Start Guide
+## ⚡ Available NPM Scripts
 
-### 1. Installation
-```bash
-npm install
-```
-
-### 2. Run the Automated Database Pipeline (Single Command)
-Executes client generation, database migration/push, and `@faker-js/faker` seeding in one command:
-```bash
-npm run db:pipeline
-# or for full wipe and reseed:
-npm run db:reset
-```
-
-### 3. Run the Automated Test Verification Suite
-Verifies relational volume, foreign-key constraints, RBAC gates, Resend email triggers, and webhook dual persistence:
-```bash
-npm run test:endpoints
-```
-
-### 4. Start the Interactive Development Server
-```bash
-npm run dev
-```
-Open **[http://localhost:3000](http://localhost:3000)** in your browser to access the interactive evaluation dashboard.
-
----
-
-## 🧪 Verification Matrix & Test Output
-
-Run `npm run test:endpoints` to view the automated test suite results:
-
-| # | Test Assertion | Expected Behavior | Result |
-| :--- | :--- | :--- | :--- |
-| 1 | Relational Seeding Volume | Orgs ≥ 5, Users ≥ 25, Txns ≥ 100, Audits ≥ 150 | **PASS** |
-| 2 | User-Organization Foreign Key | Zero orphaned users | **PASS** |
-| 3 | Transaction Foreign Key Alignment | Verified parent Org & User integrity | **PASS** |
-| 4 | Admin Privilege Gate | HTTP 200 OK for ADMIN session | **PASS** |
-| 5 | Member Privilege Restriction | HTTP 403 Forbidden for MEMBER on Admin route | **PASS** |
-| 6 | Guest Privilege Restriction | HTTP 403 Forbidden on mutation routes | **PASS** |
-| 7 | Anonymous Request Gate | HTTP 401 Unauthorized for null session | **PASS** |
-| 8 | Resend & React Email Trigger | Lifecycle email dispatched on DB mutation | **PASS** |
-| 9 | Relational Dispatch Persistence | `EmailDispatchLog` record created in Prisma | **PASS** |
-| 10 | Resend Webhook Dual-Store | Status updated in Prisma AND logged in Mongoose | **PASS** |
-
----
-
-## 🗄️ Database Provider Switching (PostgreSQL / SQLite)
-
-The repository is built to support both **PostgreSQL** (the syllabus standard) and **SQLite** (for zero-configuration local evaluation):
-
-* To toggle schema to **PostgreSQL**:
-  ```bash
-  npx tsx scripts/toggle-db.ts postgres
-  ```
-* To toggle schema back to **SQLite**:
-  ```bash
-  npx tsx scripts/toggle-db.ts sqlite
-  ```
-
----
-
-## 📄 Deliverables Summary
-
-1. **Source Code**: Fully typed, production-ready Next.js App Router codebase.
-2. **Architecture Note**: Formal 2-page document at [docs/ARCHITECTURE_NOTE.md](file:///c:/Users/Hp/Desktop/FST_SL_2/docs/ARCHITECTURE_NOTE.md) including ERDs, Sequence Diagrams, and RBAC matrix.
-3. **Automated Logs**: Live execution traces at `logs/pipeline-execution.log` and `logs/test-verification.log`.
-4. **Interactive Dashboard**: Web interface for live evaluation of all syllabus requirements.
+* `npm run dev`: Starts the Next.js local development server on port 3000.
+* `npm run build`: Compiles and verifies the optimized production Next.js build.
+* `npm run start`: Runs the built Next.js production server.
+* `npm run db:pipeline`: Generates Prisma client, synchronizes database schema, and seeds mock data via Faker.js in one command.
+* `npm run db:reset`: Wipes existing records and re-executes the complete seeding pipeline.
+* `npm run test:endpoints`: Executes the 10-point end-to-end automated test suite verifying database volume, foreign keys, RBAC gates, and webhook ingestion.
+* `npm run db:generate`: Regenerates the Prisma Client.
+* `npm run db:push`: Pushes schema changes directly to the database.
+* `npm run db:seed`: Executes the Faker.js seeding script (`prisma/seed.ts`).

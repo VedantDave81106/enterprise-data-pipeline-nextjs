@@ -85,10 +85,10 @@ export const TransactionAlertEmail = ({
           {/* Footer */}
           <Section style={footerSection}>
             <Text style={footerText}>
-              FST SL-2 Enterprise Financial Platform • Next.js Proxy & Resend Pipeline
+              Financial Transaction Alert System • Next.js & Resend Pipeline
             </Text>
             <Text style={footerSubtext}>
-              Automated Event Ingestion Engine • PO3, PO5, PO11 | PSO 2
+              Automated Notification Engine • Security & Event Dispatch
             </Text>
           </Section>
         </Container>
